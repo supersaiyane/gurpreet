@@ -1,4 +1,4 @@
-import {initialState, transition, scenarios} from './incident.mjs';
+import {initialState, transition, scenarios, evidenceFor} from './incident.mjs';
 
 const nodeContent={
  edge:['01 / EDGE & TRAFFIC','Reliability starts with the user.','Shape traffic around service health. Use objectives, load patterns and graceful degradation to protect the experience at the edge.'],
@@ -16,24 +16,48 @@ $$('[data-node]').forEach(button=>button.addEventListener('click',()=>{
  $('#node-index').textContent=index;$('#node-title').textContent=title;$('#node-description').textContent=description;
 }));
 
+// Native details grouping handles modern browsers; toggle closes siblings as a fallback.
+$$('.work-item').forEach(item=>item.addEventListener('toggle',()=>{
+ if(item.open) $$('.work-item').forEach(other=>{if(other!==item)other.open=false;});
+}));
 let state=initialState();
+let evidenceView='metrics';
+let replayIndex=7;
+const completed=new Set();
 const addEvent=(title,description,className='event-complete')=>{
  const li=document.createElement('li');li.className=className;
  const heading=document.createElement('span');heading.textContent=title;
  const p=document.createElement('p');p.textContent=description;
  li.append(heading,p);$('#event-list').append(li);
 };
+function renderEvidence(){
+ const scenario=state.scenario?scenarios[state.scenario]:null;
+ $$('[data-evidence]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.evidence===evidenceView)));
+ $('#signal-replay').disabled=!scenario;
+ $('#signal-replay').value=String(replayIndex);
+ $('#replay-time').textContent=scenario?'T+'+replayIndex+'m':'READY';
+ $('#chart-label').textContent=scenario?scenario.label.toUpperCase()+' / SIMULATED':'SIMULATED SIGNAL';
+ $('#evidence-output').textContent=evidenceFor(state.scenario,evidenceView,replayIndex);
+ const samples=scenario?scenario.samples:[1,1,1,1,1,1,1,1];
+ const max=Math.max(...samples)*1.15;
+ const points=samples.slice(0,replayIndex+1).map((value,i)=>[i/7*480,100-(value/max)*80]);
+ $('#signal-line').setAttribute('points',points.map(point=>point.join(',')).join(' '));
+ const last=points[points.length-1];
+ $('#signal-point').setAttribute('cx',String(last[0]));$('#signal-point').setAttribute('cy',String(last[1]));
+ $('#signal-chart-title').textContent=scenario?scenario.label+' at minute '+replayIndex+': '+samples[replayIndex]+' '+scenario.unit+' (simulated)':'Choose a scenario to replay simulated telemetry';
+ $('#signal-replay').setAttribute('aria-valuetext',scenario?'Minute '+replayIndex+', '+samples[replayIndex]+' '+scenario.unit:'Choose a scenario');
+}
 function renderIncident(){
  const scenario=state.scenario?scenarios[state.scenario]:null;
  const active=!!scenario && state.phase!=='recovered';
  $$('[data-scenario]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.scenario===state.scenario)));
  $$('[data-system]').forEach(node=>node.classList.toggle('degraded',active&&node.dataset.system===scenario.node));
  $('#lab-dot').style.background=active?'var(--amber)':'var(--cyan)';
- $('#lab-status').textContent=active?`${scenario.name.toUpperCase()} / SIMULATED INCIDENT`:state.phase==='recovered'?'RECOVERY COMPLETE / SIMULATED':'ALL SYSTEMS OPERATIONAL';
+ $('#lab-status').textContent=active?scenario.name.toUpperCase()+' / SIMULATED INCIDENT':state.phase==='recovered'?'RECOVERY COMPLETE / SIMULATED':'ALL SYSTEMS OPERATIONAL';
  $('#lab-metric').textContent=scenario?(active?scenario.metric:scenario.healthy):'180 ms';
  $('#lab-metric').style.color=active?'var(--amber)':'var(--cyan)';
- $('#lab-metric-label').textContent=`${scenario?scenario.label.toUpperCase():'API LATENCY'} · SIMULATED`;
- $('#lab-impact').textContent=scenario?(active?scenario.impact:'Simulated recovery complete. The affected system is healthy again. Validate the change, then capture what you learned.'):'Healthy services. Traffic is flowing. Choose a scenario to see what changes.';
+ $('#lab-metric-label').textContent=(scenario?scenario.label.toUpperCase():'API LATENCY')+' · SIMULATED';
+ $('#lab-impact').textContent=scenario?(active?scenario.impact:'Simulated recovery complete. The affected system is healthy again. Review what your decision demonstrated below.'):'Healthy services. Traffic is flowing. Choose a scenario to see what changes.';
  $('#event-list').replaceChildren();
  if(!scenario){
   addEvent('System ready','Observability is active. No incident has been introduced.');
@@ -42,32 +66,65 @@ function renderIncident(){
   addEvent('Signal detected',scenario.events[0]);
   addEvent('Evidence correlated',scenario.events[1]);
   if(state.phase==='recovered'){
-   addEvent('Human decision recorded','You approved the simulated recovery.');
-   addEvent('Service restored','Next: validate health, review the incident and improve the system.');
+   addEvent('Dry run passed','A bounded change passed the simulated safety check.');
+   addEvent('Human decision recorded','You reviewed the risk and approved the simulated recovery.');
+   addEvent('Service restored','Validate health, capture the learning and improve the system.');
   }else if(state.phase==='investigating'){
    addEvent('Investigation requested',scenario.risk,'event-review');
   }else{
-   addEvent(state.phase==='review'?'Awaiting your decision':'Recommendation available',scenario.events[2],'event-review');
+   addEvent(state.dryRun==='blocked'?'Safety gate blocked the plan':state.dryRun==='pass'?'Dry run passed':state.phase==='review'?'Choose and test a strategy':'Recommendation available',state.dryRun==='blocked'?'Revise the strategy. Approval remains blocked.':scenario.events[2],'event-review');
   }
  }
  $('#review-plan').disabled=!['detected','investigating'].includes(state.phase);
- $('#review-plan').textContent=state.phase==='recovered'?'Recovery complete ✓':'Review recovery plan ↗';
+ $('#review-plan').textContent=state.phase==='recovered'?'Recovery complete ✓':'Open recovery workbench ↗';
  $('#recovery-panel').hidden=state.phase!=='review';
- if(scenario){$('#recovery-action').textContent=scenario.action;$('#recovery-risk').textContent=scenario.risk;}
- const prompts={healthy:'You’re in command. Start by introducing a failure.',detected:'Evidence gathered. Review the proposed action and its tradeoffs.',review:'Read the risk, then approve the simulated action or investigate further.',investigating:'Investigation held the action. Review capacity, dependencies and rollback safety before proceeding.',recovered:'Service restored by your decision. Reset or choose another scenario to explore a different tradeoff.'};
+ $('#incident-debrief').hidden=state.phase!=='recovered';
+ if(scenario){
+  $('#bounded-action').textContent=scenario.action;$('#broad-action').textContent=scenario.alternative;
+  $('#recovery-risk').textContent=scenario.risk;
+  $('#debrief-lesson').textContent=scenario.lesson;
+  $('#debrief-title').textContent=scenario.name+' / decision debrief';
+ }
+ $$('[name="recovery-strategy"]').forEach(radio=>radio.checked=radio.value===state.plan);
+ $('#dry-run-result').hidden=!state.dryRun;
+ $('#dry-run-result').className=state.dryRun==='pass'?'dry-run-pass':'dry-run-blocked';
+ $('#dry-run-result').textContent=state.dryRun&&scenario?(state.dryRun==='pass'?'PASS / '+scenario.passed:'BLOCKED / '+scenario.blocked):'';
+ $('#risk-ack').disabled=state.dryRun!=='pass';$('#risk-ack').checked=!!state.acknowledged;
+ $('#approve-plan').disabled=!(state.dryRun==='pass'&&state.acknowledged);
+ $('#dry-run-plan').textContent=state.dryRun?'Run dry run again ↗':'Run simulated dry run ↗';
+ const step=state.phase==='healthy'?0:state.phase==='recovered'?3:state.dryRun?2:1;
+ $$('[data-step]').forEach((element,i)=>{element.classList.toggle('current',i===step);element.classList.toggle('complete',i<step||state.phase==='recovered');});
+ $('#lab-completed').textContent=completed.size+' / 3 explored this visit';
+ const prompts={healthy:'You’re in command. Start by introducing a failure.',detected:'Inspect metrics, logs and traces below. Then compare recovery strategies.',review:'Choose a strategy, run the safety check and review the risk before approval.',investigating:'The action is on hold. Replay the evidence, then return to the workbench.',recovered:'Service restored. Read your decision debrief, then try another scenario.'};
  $('#lab-next').textContent=prompts[state.phase];
+ renderEvidence();
 }
-function dispatch(event,id){state=transition(state,event,id);renderIncident();}
+function dispatch(event,id){
+ state=transition(state,event,id);
+ if(event==='inject'||event==='reset'){evidenceView='metrics';replayIndex=7;}
+ if(state.phase==='recovered')completed.add(state.scenario);
+ renderIncident();
+}
 $$('[data-scenario]').forEach(button=>button.addEventListener('click',()=>dispatch('inject',button.dataset.scenario)));
 $('#reset-lab').addEventListener('click',()=>dispatch('reset'));
-$('#review-plan').addEventListener('click',()=>{dispatch('review');$('#recovery-panel').focus({preventScroll:true});$('#recovery-panel').scrollIntoView({block:'nearest',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});});
-$('#approve-plan').addEventListener('click',()=>{dispatch('approve');$('#reset-lab').focus({preventScroll:true});});
-$('#investigate-plan').addEventListener('click',()=>{dispatch('investigate');$('#review-plan').focus({preventScroll:true});});
+function focusPanel(selector){const panel=$(selector);panel.focus({preventScroll:true});panel.scrollIntoView({block:'nearest',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});}
+$('#review-plan').addEventListener('click',()=>{dispatch('review');focusPanel('#recovery-panel');});
+$$('[name="recovery-strategy"]').forEach(radio=>radio.addEventListener('change',()=>dispatch('plan',radio.value)));
+$('#dry-run-plan').addEventListener('click',()=>dispatch('dry-run'));
+$('#risk-ack').addEventListener('change',event=>dispatch('acknowledge',event.target.checked));
+$('#approve-plan').addEventListener('click',()=>{dispatch('approve');focusPanel('#incident-debrief');});
+$('#investigate-plan').addEventListener('click',()=>{dispatch('investigate');$('#review-plan').focus();});
+$$('[data-evidence]').forEach(button=>button.addEventListener('click',()=>{evidenceView=button.dataset.evidence;renderEvidence();}));
+$('#signal-replay').addEventListener('input',event=>{replayIndex=Number(event.target.value);renderEvidence();});
+$('#next-scenario').addEventListener('click',()=>{
+ const ids=Object.keys(scenarios);const next=ids.find(id=>!completed.has(id))||ids[(ids.indexOf(state.scenario)+1)%ids.length];
+ dispatch('inject',next);const button=$('[data-scenario="'+next+'"]');button.focus();button.scrollIntoView({block:'center',behavior:motion.matches?'instant':'smooth'});
+});
 
 $$('[data-filter]').forEach(button=>button.addEventListener('click',()=>{
  $$('[data-filter]').forEach(filter=>filter.setAttribute('aria-pressed',String(filter===button)));
  let count=0;
- $$('[data-category]').forEach(item=>{item.hidden=button.dataset.filter!=='all'&&item.dataset.category!==button.dataset.filter;if(!item.hidden)count++;});
+ $$('[data-category]').forEach(item=>{item.hidden=button.dataset.filter!=='all'&&!item.dataset.category.split(' ').includes(button.dataset.filter);if(!item.hidden)count++;});
  $('.filter-status').textContent=`${count} exploration${count===1?'':'s'} shown.`;
 }));
 const motion=matchMedia('(prefers-reduced-motion: reduce)');
