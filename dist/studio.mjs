@@ -19,6 +19,7 @@ for(let z=-1;z<=1;z++)for(let y=-1;y<=1;y++)for(let x=-1;x<=1;x++){
  block.style.transform=`translate3d(${x*42}px,${y*42}px,${z*42}px)`;
  assembly.append(block);fragments.push(block);
 }
+if(gsap)gsap.set(assembly,{rotationX:-22,rotationY:-32,rotationZ:0,scale:1,force3D:true});
 let floatTween=null;
 if(gsap&&!reduced.matches)floatTween=gsap.to(assembly,{y:9,duration:3.2,repeat:-1,yoyo:true,ease:'sine.inOut'});
 function syncAssemblyMotion(){if(floatTween)floatTween.paused(reduced.matches||$('.core-stage').classList.contains('motion-paused')||$('.core-stage').classList.contains('core-offscreen'));}
@@ -45,7 +46,7 @@ if(gsap){
  gsap.set(assembly,{rotationX:-22,rotationY:-32});
  if(!reduced.matches){
   gsap.from('#hero-title>span',{yPercent:115,rotate:3,opacity:0,stagger:.13,duration:1.1,ease:'expo.out',clearProps:'transform,opacity'});
-  gsap.from(fragments,{z:()=>160+Math.random()*140,opacity:0,duration:1.4,stagger:{amount:.5,from:'center'},ease:'expo.out',overwrite:'auto'});
+  gsap.from(fragments,{z:()=>160+Math.random()*140,duration:1.4,stagger:{amount:.5,from:'center'},ease:'expo.out',overwrite:'auto'});
   gsap.from('.identity-statement,.console-rail,.hero-positioning',{y:18,opacity:0,stagger:.13,duration:.8,delay:.35,clearProps:'transform,opacity'});
   gsap.from('.flow-node',{scrollTrigger:{trigger:'.signal-console',start:'top 85%',once:true},y:35,opacity:0,stagger:.085,duration:.8,ease:'power3.out',clearProps:'transform,opacity'});
  }
