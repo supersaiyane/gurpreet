@@ -189,3 +189,21 @@ terminalInput.addEventListener('keydown',event=>{
   if(matches.length===1&&matches[0].toLowerCase()!==prefix){event.preventDefault();terminalInput.value=matches[0];}
  }
 });
+
+// The label describes the destination mode; the current preference survives reloads.
+const themeToggle = document.querySelector('#theme-toggle');
+function syncThemeControl() {
+ const isDay = document.documentElement.dataset.theme === 'light';
+ const action = isDay ? 'Switch to night mode' : 'Switch to day mode';
+ themeToggle.setAttribute('aria-label', action);
+ themeToggle.title = action;
+ document.querySelector('#theme-label').textContent = isDay ? 'Night' : 'Day';
+ document.querySelector('meta[name="theme-color"]').content = isDay ? '#f5f8fa' : '#080d10';
+}
+themeToggle.addEventListener('click', () => {
+ const theme = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+ document.documentElement.dataset.theme = theme;
+ try { localStorage.setItem('portfolio-theme', theme); } catch {}
+ syncThemeControl();
+});
+syncThemeControl();
