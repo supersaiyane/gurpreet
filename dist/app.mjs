@@ -1,3 +1,4 @@
+import {resolveCommand,commandNames} from './terminal.mjs';
 import {initialState, transition, scenarios, evidenceFor} from './incident.mjs';
 
 const nodeContent={
@@ -131,3 +132,43 @@ const motion=matchMedia('(prefers-reduced-motion: reduce)');
 function updateMotion(){const map=$('.topology');if(motion.matches)map.pauseAnimations();else map.unpauseAnimations();}
 motion.addEventListener('change',updateMotion);updateMotion();
 renderIncident();
+
+
+// Portfolio commands are local, allowlisted interactions - never a system shell.
+const terminalInput=$('#terminal-input');
+const terminalHistory=[];
+let terminalHistoryIndex=0;
+let terminalDraft='';
+function runTerminal(raw){
+ const command=raw.trim();if(!command)return;
+ const result=resolveCommand(command);
+ terminalHistory.push(command);if(terminalHistory.length>30)terminalHistory.shift();
+ terminalHistoryIndex=terminalHistory.length;terminalDraft='';
+ if(result.clear){$('#terminal-output').replaceChildren();$('.terminal-boot').hidden=true;}
+ else{
+  const group=document.createElement('div');group.className='terminal-result';
+  const prompt=document.createElement('p');prompt.className='terminal-command';prompt.textContent='$ '+command;group.append(prompt);
+  for(const line of result.lines){const row=document.createElement('p');row.textContent=line;group.append(row);}
+  $('#terminal-output').append(group);
+  while($('#terminal-output').children.length>12)$('#terminal-output').firstElementChild.remove();
+ }
+ terminalInput.value='';
+ $('#terminal-screen').scrollTop=$('#terminal-screen').scrollHeight;
+ if(result.navigate){
+  window.location.hash=result.navigate;
+  const heading=$(result.navigate);heading.setAttribute('tabindex','-1');heading.focus({preventScroll:true});
+ }else terminalInput.focus({preventScroll:true});
+}
+$('#terminal-form').addEventListener('submit',event=>{event.preventDefault();runTerminal(terminalInput.value);});
+$$('[data-command]').forEach(button=>button.addEventListener('click',()=>runTerminal(button.dataset.command)));
+terminalInput.addEventListener('keydown',event=>{
+ if(event.key==='ArrowUp'||event.key==='ArrowDown'){
+  event.preventDefault();
+  if(terminalHistoryIndex===terminalHistory.length)terminalDraft=terminalInput.value;
+  terminalHistoryIndex=Math.max(0,Math.min(terminalHistory.length,terminalHistoryIndex+(event.key==='ArrowUp'?-1:1)));
+  terminalInput.value=terminalHistoryIndex===terminalHistory.length?terminalDraft:terminalHistory[terminalHistoryIndex];
+ }else if(event.key==='Tab'&&terminalInput.value.trim()){
+  const prefix=terminalInput.value.trim().toLowerCase();const matches=commandNames.filter(name=>name.toLowerCase().startsWith(prefix));
+  if(matches.length===1&&matches[0].toLowerCase()!==prefix){event.preventDefault();terminalInput.value=matches[0];}
+ }
+});

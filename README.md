@@ -28,3 +28,7 @@ The incident lab uses fictional signals and deterministic local state. It does n
 - Recovery requires a passing simulated dry run and an explicit risk acknowledgement. Changing strategies invalidates earlier checks. Resetting or changing scenarios clears the current decision.
 - Completion counts remain in browser memory for this visit only. No visitor analytics or remote AI calls are used.
 - The project gallery links to the five owner-supplied projects. Descriptions follow their repository summaries; experience tags follow the supplied resume. The resume itself is not published.
+
+## Hero terminal
+
+The hero includes a local portfolio terminal inspired by the original website. Type `help` for identity, skills, projects, biography and navigation commands. Arrow keys browse a bounded session history; Tab completes a unique prefix and then lets focus move normally. `clear` clears the transcript. Commands never execute shell code or send input to a server; output is rendered as plain text.
