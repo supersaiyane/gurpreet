@@ -11,11 +11,26 @@ const nodeContent={
 };
 const $=s=>document.querySelector(s);
 const $$=s=>[...document.querySelectorAll(s)];
+let selectedArchitectureNode=null;
+function closeArchitectureInsight(returnFocus=false){
+ $('#architecture-insight').hidden=true;
+ $$('[data-node]').forEach(node=>{node.setAttribute('aria-pressed','false');node.setAttribute('aria-expanded','false');});
+ if(returnFocus&&selectedArchitectureNode)selectedArchitectureNode.focus({preventScroll:true});
+ selectedArchitectureNode=null;
+}
 $$('[data-node]').forEach(button=>button.addEventListener('click',()=>{
- $$('[data-node]').forEach(node=>node.setAttribute('aria-pressed',String(node===button)));
+ if(selectedArchitectureNode===button){closeArchitectureInsight();return;}
+ selectedArchitectureNode=button;
+ $$('[data-node]').forEach(node=>{node.setAttribute('aria-pressed',String(node===button));node.setAttribute('aria-expanded',String(node===button));});
  const [index,title,description]=nodeContent[button.dataset.node];
- $('#node-index').textContent=index;$('#node-title').textContent=title;$('#node-description').textContent=description;
+ $('#node-index').textContent='Architecture insight / '+index.split(' / ')[1];
+ $('#node-title').textContent=title;$('#node-description').textContent=description;
+ $('#architecture-insight').hidden=false;
 }));
+$('#close-insight').addEventListener('click',()=>closeArchitectureInsight(true));
+$('.architecture').addEventListener('keydown',event=>{
+ if(event.key==='Escape'&&!$('#architecture-insight').hidden){event.preventDefault();closeArchitectureInsight(true);}
+});
 
 // Native details grouping handles modern browsers; toggle closes siblings as a fallback.
 $$('.work-item').forEach(item=>item.addEventListener('toggle',()=>{

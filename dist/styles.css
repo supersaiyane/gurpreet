@@ -135,3 +135,12 @@
 @media(max-width:420px){.terminal-mode{display:none}.terminal-top{font-size:11px}.terminal-screen{font-size:11px;height:185px}.terminal-shortcuts>span{font-size:8px}.terminal-shortcuts button{font-size:10px;padding:5px 7px}}
 @media(min-width:761px){.header{height:90px}.hero{padding-top:45px;padding-bottom:45px}.hero h1{font-size:clamp(72px,6.7vw,100px);margin-bottom:20px}.hero-copy .eyebrow{margin-bottom:20px}.hero-terminal{margin:20px 0 0}.hero-copy .hero-actions{margin-top:18px}.terminal-shortcuts{padding-block:8px}.terminal-screen{font-size:13px}}
 @media(min-width:761px){.hero{padding-top:32px}}
+/* Architecture insights belong to the map and appear only on selection. */
+.map-stage .node-inspector{position:absolute;z-index:5;inset:12px 10px auto;margin:0;padding:22px 44px 22px 22px;border:1px solid #37636e;border-radius:4px;background:#102128;box-shadow:0 15px 35px #0006}
+.node-inspector[hidden]{display:none}
+.map-stage .node-inspector>span{font:10px/1.8 var(--mono);letter-spacing:1px;color:var(--cyan);text-transform:uppercase}
+.map-stage .node-inspector h2{font-size:20px;margin:10px 0;line-height:1.4}
+.map-stage .node-inspector p{font-size:14px;line-height:1.8}
+#close-insight{position:absolute;right:9px;top:8px;width:30px;height:30px;font-size:24px;line-height:1;color:#b6d1db;border:1px solid #345560;border-radius:3px}
+#close-insight:hover{color:var(--cyan);background:#163541}
+@media(max-width:760px){.map-stage .node-inspector{inset:0 0 auto;padding:18px 40px 18px 18px}.map-stage .node-inspector h2{font-size:18px}.map-stage .node-inspector p{font-size:13px}.map-stage .node-inspector>span{font-size:9px}}
