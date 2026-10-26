@@ -13,3 +13,7 @@ References:
 Implementation: CSS 3D cube with selectable disciplines and keyboard controls, a four-stop architecture walkthrough, a guided lab entry and subtle scroll reveals. No external rendering library. Respect reduced motion, pause controls, offscreen rendering, day/night mode and mobile layouts. Preserve all existing simulation safety gates and portfolio content.
 
 Validation: existing unit suite, syntax checks, browser interaction checks, mobile and both themes. Confirm previous branch tips unchanged before pushing the new branch.
+
+## Revision after visual review
+
+The first pass was too close to the previous branch. Rebuild the hero as a technical identity console with large sans typography, actual browser telemetry and a 3D assembly that can expand. Replace the manual highlight tour with a controllable GSAP signal timeline showing request, platform, correlated signal and approval stages. Rebuild guided mode as a focused four-step incident player, showing evidence first, asking for a diagnosis, allowing safe/unsafe plans, and keeping dry-run plus acknowledgement gates. Free exploration remains available. Use actual GSAP locally with no runtime CDN dependency. Day/night and reduced motion apply throughout.
