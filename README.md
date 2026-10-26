@@ -1,4 +1,4 @@
-# Gurpreet Singh - Reliability, by design
+# Gurpreet Singh - Trust is engineered
 
 A responsive portfolio for SRE, Cloud, DevOps and Platform Engineering leadership. Native HTML, CSS, SVG and JavaScript; no runtime packages or build step.
 
@@ -32,3 +32,10 @@ The incident lab uses fictional signals and deterministic local state. It does n
 ## Hero terminal
 
 The hero includes a local portfolio terminal inspired by the original website. Type `help` for identity, skills, projects, biography and navigation commands. Arrow keys browse a bounded session history; Tab completes a unique prefix and then lets focus move normally. `clear` clears the transcript. Commands never execute shell code or send input to a server; output is rendered as plain text.
+
+
+## Selected B + C version
+
+This design branch implements the approved combination: C's leadership narrative and serif display with B's interactive architecture flow. `dist/hybrid.css` carries the reference-locked visual system. The diagram becomes a vertical flow on mobile, with dismissible insights. The existing terminal, incident workbench, project links and accordion continue to work.
+
+`main` and the existing Sites publication preserve the previous portfolio. To preview this branch separately, run `python3 -m http.server 4175 --directory dist` and open http://localhost:4175/.

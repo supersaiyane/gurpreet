@@ -2,8 +2,9 @@ import {resolveCommand,commandNames} from './terminal.mjs';
 import {initialState, transition, scenarios, evidenceFor} from './incident.mjs';
 
 const nodeContent={
+ observability:['OBSERVABILITY / SIGNALS','See the system through the user’s experience.','Connect logs, metrics and traces to service objectives. Useful signals reduce noise and help teams investigate with evidence.'],
  edge:['01 / EDGE & TRAFFIC','Reliability starts with the user.','Shape traffic around service health. Use objectives, load patterns and graceful degradation to protect the experience at the edge.'],
- services:['02 / SERVICES','Design for change. Plan for failure.','Clear service boundaries, observable dependencies and reversible releases make complex systems easier to operate.'],
+ services:['OPERATIONS / RELIABILITY','Turn every incident into a stronger system.','Runbooks, tested recovery and blameless reviews turn operational experience into improvements that outlast the incident.'],
  platform:['03 / PLATFORM','The paved road should earn adoption.','Build developer platforms that remove friction. Useful defaults, GitOps and clear ownership let teams focus on their products.'],
  cloud:['04 / CLOUD','Resilience is an architecture decision.','Design for capacity, failure domains and recovery. Bring cloud economics and security into the same conversation as availability.'],
  ai:['05 / AI OPERATIONS','Automate the toil. Own the decision.','AI can connect signals and propose a response. Clear boundaries, evidence and human accountability make it useful.'],
@@ -22,9 +23,10 @@ $$('[data-node]').forEach(button=>button.addEventListener('click',()=>{
  if(selectedArchitectureNode===button){closeArchitectureInsight();return;}
  selectedArchitectureNode=button;
  $$('[data-node]').forEach(node=>{node.setAttribute('aria-pressed',String(node===button));node.setAttribute('aria-expanded',String(node===button));});
- const [index,title,description]=nodeContent[button.dataset.node];
- $('#node-index').textContent='Architecture insight / '+index.split(' / ')[1];
+ const [,title,description]=nodeContent[button.dataset.node];
+ $('#node-index').textContent='Architecture insight / '+button.querySelector('.layer-heading strong').textContent;
  $('#node-title').textContent=title;$('#node-description').textContent=description;
+ $('#architecture-insight').classList.toggle('insight-left',['ai','human','services'].includes(button.dataset.node));
  $('#architecture-insight').hidden=false;
 }));
 $('#close-insight').addEventListener('click',()=>closeArchitectureInsight(true));

@@ -1,6 +1,6 @@
 # Refero portfolio design exploration
 
-This branch preserves three proposed visual directions alongside the current working portfolio. The production files in `dist/` are unchanged from `main`.
+This branch preserves the three original visual directions and now includes the owner-selected B + C working implementation in `dist/`. Main retains the previous portfolio.
 
 ## Compare the concepts
 
@@ -20,4 +20,4 @@ Then open http://localhost:4174/portfolio-designs.html.
 
 Read `portfolio-design-references.md` for the references, design decisions, content constraints and proposed implementation direction.
 
-These are static design mockups with an interactive comparison interface. They are not three implemented portfolio versions. Choose a visual direction before changing production source. Main and the published Sites portfolio retain the working terminal, architecture explorer, projects and incident lab.
+The A/B/C images remain static design explorations. The selected B + C combination is now implemented in `dist/`, preserving the terminal, architecture insights, exclusive experience accordion, incident lab and project gallery. See `combined-b-c.md` for details. Serve `dist/` to review the working version. The published Sites portfolio and main branch retain the previous design.
