@@ -1,4 +1,4 @@
-# Gurpreet Singh — Reliability, by design
+# Gurpreet Singh - Reliability, by design
 
 A responsive portfolio for SRE, Cloud, DevOps and Platform Engineering leadership. Native HTML, CSS, SVG and JavaScript; no runtime packages or build step.
 

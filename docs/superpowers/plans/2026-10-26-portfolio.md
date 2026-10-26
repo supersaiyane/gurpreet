@@ -12,8 +12,8 @@ Black background; cyan and amber accents; preserve verified career facts; clearl
 Keyboard access, small screens, reduced motion, scenario changes during review, invalid recovery actions.
 
 ## Tasks
-- [ ] 1. Write and run incident transition tests before implementation. Implement scenario selection, explicit approval, alternative investigation and reset. Verify with node --test.
-- [ ] 2. Implement responsive portfolio, architecture inspector, incident DOM controller, expandable career case studies, project filters and navigation. Verify in browser at desktop and mobile widths, including keyboard and reduced motion.
-- [ ] 3. Commit source to supplied repository, package identical static source with Sites helper, deploy privately and confirm terminal deployment result.
+- [x] 1. Write and run incident transition tests before implementation. Implement scenario selection, explicit approval, alternative investigation and reset. Verify with node --test.
+- [x] 2. Implement responsive portfolio, architecture inspector, incident DOM controller, expandable career case studies, project filters and navigation. Verify in browser at desktop and mobile widths, including keyboard and reduced motion.
+- [x] 3. Commit source to supplied repository, package identical static source with Sites helper, deploy privately and confirm terminal deployment result.
 
 User requested execution with “lets start”; proceed inline without another planning gate.
