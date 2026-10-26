@@ -50,3 +50,12 @@ body{background:var(--bg)}
 @media(min-width:1101px){.layer-label{font-size:9px}.layer-details{font-size:12px}.cloud-layer .layer-details,.observe-layer .layer-details,.operations-layer .layer-details{font-size:11px}.blueprint-connections text{font-size:8px}}
 @media(min-width:761px) and (max-width:1100px){.layer-label{font-size:8px;letter-spacing:0}.layer-details{font-size:10px}.cloud-layer .layer-details{font-size:9px}}
 @media(min-width:1101px) and (max-height:850px){.hero.hybrid-hero{padding-top:24px}.hero-intro{margin-bottom:22px;gap:65px}.hybrid-hero h1{font-size:76px}.hero-statement .eyebrow{margin-bottom:16px}.positioning-lead{font-size:17px;line-height:1.5;margin-bottom:17px}.role-kicker{font-size:14px;margin-bottom:12px}.hero-tenure{margin-top:17px}.flow-canvas.map-stage{aspect-ratio:1140/325}.flow-node{padding:11px 13px}.layer-label{font-size:8px;margin-bottom:7px}.layer-heading strong{font-size:14px}.layer-details{font-size:11px;gap:3px;margin-top:10px;padding-top:8px}.cloud-layer{height:25%}.cloud-layer .layer-details{margin-top:5px;padding-top:0;font-size:10px}.observe-layer,.operations-layer{height:19%}.observe-layer .layer-details,.operations-layer .layer-details{margin-top:6px;padding-top:0;font-size:10px}}
+
+/* Company identities lead each experience accordion. */
+.company-logo{flex:0 0 140px;display:flex;align-items:center;justify-content:center;width:140px;height:82px;padding:14px;border:1px solid #314550;border-radius:8px;background:#f4f5f3;align-self:flex-start;margin-top:2px}
+.company-logo img{display:block;width:100%;height:100%;object-fit:contain}
+.company-logo--natwest-group{background:#17131f;border-color:#41324f}
+.work-item summary>div{min-width:0;flex:1}
+.case-content{margin-left:175px}
+@media(max-width:760px){.company-logo{flex-basis:78px;width:78px;height:55px;padding:8px;border-radius:5px}.work-item summary{gap:14px;flex-wrap:nowrap}.work-item summary .expand{flex-shrink:0}.case-content{margin-left:0}.work-item h3{font-size:clamp(23px,5.8vw,29px)}}
+.company-logo--vertisystem{background:#17252c;border-color:#354a53}
