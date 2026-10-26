@@ -26,8 +26,9 @@ function syncAssemblyMotion(){if(floatTween)floatTween.paused(reduced.matches||$
 new MutationObserver(syncAssemblyMotion).observe($('.core-stage'),{attributes:true,attributeFilter:['class']});
 reduced.addEventListener('change',syncAssemblyMotion);
 let exploded=false;
-$('#assembly-toggle').addEventListener('click',()=>{
- exploded=!exploded;
+function setAssemblyExpanded(expanded){
+ if(exploded===expanded)return;
+ exploded=expanded;
  $('#assembly-toggle').setAttribute('aria-pressed',String(exploded));
  $('#assembly-toggle').innerHTML=(exploded?'Reassemble the system':'Disassemble the system')+' <span>↗</span>';
  fragments.forEach((block,i)=>{
@@ -36,7 +37,12 @@ $('#assembly-toggle').addEventListener('click',()=>{
   if(gsap)gsap.to(block,{...values,duration:reduced.matches?0:1.15,delay:reduced.matches?0:i*.012,ease:'expo.inOut',overwrite:true});
   else block.style.transform=`translate3d(${values.x}px,${values.y}px,${values.z}px)`;
  });
-});
+}
+$('#assembly-toggle').addEventListener('click',()=>setAssemblyExpanded(!exploded));
+const hoverPointer=matchMedia('(hover: hover) and (pointer: fine)');
+$('.core-space').addEventListener('pointerenter',event=>{if(hoverPointer.matches&&event.pointerType!=='touch')setAssemblyExpanded(true);});
+$('.core-space').addEventListener('pointerleave',event=>{if(hoverPointer.matches&&event.pointerType!=='touch')setAssemblyExpanded(false);});
+$('.core-space').addEventListener('pointercancel',()=>setAssemblyExpanded(false));
 const rotations={sre:-32,cloud:-122,ai:-212,platform:58};
 $$('[data-core]').forEach(button=>button.addEventListener('click',()=>{
  if(gsap)gsap.to(assembly,{rotationY:rotations[button.dataset.core],rotationX:-22,duration:reduced.matches?0:1.1,ease:'power3.inOut',overwrite:'auto'});
